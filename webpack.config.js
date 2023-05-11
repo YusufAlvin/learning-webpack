@@ -1,6 +1,9 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
   entry: './src/index.js',
@@ -12,6 +15,10 @@ module.exports = {
   optimization: {
     // moduleIds: 'natural',
     minimize: true,
+    minimizer: [
+      new UglifyJsPlugin(),
+      new TerserPlugin(),
+    ],
     runtimeChunk: 'single',
     splitChunks: {
       cacheGroups: {
@@ -31,6 +38,16 @@ module.exports = {
     }),
     new MiniCssExtractPlugin({
       filename: 'css/[name].[hash].css',
+    }),
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: 'public',
+          globOptions: {
+            ignore: ['**/index.html'], // prevent copy index.html to build path
+          },
+        },
+      ],
     })
   ],
   module: {
